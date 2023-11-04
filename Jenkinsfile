@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage ('git clone') {
             steps {
-                git clone https://github.com/bhoomikakrish/docker-spring-boot-java-web-service-example.git
+                git https://github.com/bhoomikakrish/docker-spring-boot-java-web-service-example.git
             }
         }
         stage ('docker build and push the image') {
