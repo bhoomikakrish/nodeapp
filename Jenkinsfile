@@ -13,6 +13,7 @@ pipeline {
         }
         stage ('docker build and push the image') {
             steps {
+                echo "CICD jenkins job running"
                 def dockerImage = docker.build('bhoomika2897n/service1Image:$BUILD_NUMBER', '.')
                 docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
                     dockerImage.push()
