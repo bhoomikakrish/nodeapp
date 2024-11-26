@@ -1,22 +1,39 @@
 pipeline {
-    environment {
-        registry = "bhoomika2897n"
-        registryCredential = 'docker_cred'
-        dockerImage = ''
+  environment {
+    registry = "bhoomika2897n"
+    registryCredential = 'docker_cred'
+    dockerImage = ''
+  }
+  agent any
+  stages {
+    stage('Cloning our Git') {
+      steps {
+        git 'https://github.com/bhoomikakrish/nodeapp.git'
+      }
     }
-    agent any
-    stages {
-        stage ('git clone') {
+    stage('Build and Push Docker Image') {
             steps {
-                git 'https://github.com/bhoomikakrish/nodeapp.git'
-            }
-        }
-        stage ('docker build and push the image') {
-            steps {
-                echo "CICD jenkins job running"
-                def dockerImage = docker.build('bhoomika2897n/service1Image:$BUILD_NUMBER', '.')
-                docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
-                    dockerImage.push()
+                script {
+                        def currentBuildNumber = currentBuild.number
+                        def nextBuildNumber = currentBuild.number + 1
+                        def lastBuildNumber = currentBuild.number - 1
+                        echo "$currentBuildNumber"
+                        echo "$nextBuildNumber"
+                        echo "$lastBuildNumber"
+                        def newImageName = "bhoomika2897n/nodeimage1:${currentBuildNumber}"
+                        def lastImageName = "bhoomika2897n/nodeimage1:${lastBuildNumber}"
+                        echo "$newImageName"
+                        echo "$lastImageName"
+                        
+
+                    // Build your Docker image (replace 'my-docker-image' and 'latest' with your image name and tag)
+                    def dockerImage = docker.build(newImageName, '.')
+                    
+                    // Authenticate with a Docker registry (e.g., Docker Hub)
+                    docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
+                        // Push the Docker image
+                         dockerImage.push()
+                    }
                 }
             }
         }
